@@ -7,26 +7,45 @@ import Animated, { FadeInRight, FadeOutRight, Layout } from 'react-native-reanim
 
 interface CartItemProps {
   item: CartItemType;
+  onError?: (message: string) => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ item }) => {
+const CartItem: React.FC<CartItemProps> = ({ item, onError }) => {
   const { updateQuantity, removeItem } = useCart();
   const { product, quantity } = item;
 
   const handleIncrease = () => {
-    updateQuantity(product.id, quantity + 1);
+    try {
+      updateQuantity(product.id, quantity + 1);
+    } catch (error: any) {
+      if (onError) {
+        onError(error.message || 'Failed to update quantity');
+      }
+    }
   };
 
   const handleDecrease = () => {
-    if (quantity > 1) {
-      updateQuantity(product.id, quantity - 1);
-    } else {
-      removeItem(product.id);
+    try {
+      if (quantity > 1) {
+        updateQuantity(product.id, quantity - 1);
+      } else {
+        removeItem(product.id);
+      }
+    } catch (error: any) {
+      if (onError) {
+        onError(error.message || 'Failed to update quantity');
+      }
     }
   };
 
   const handleRemove = () => {
-    removeItem(product.id);
+    try {
+      removeItem(product.id);
+    } catch (error: any) {
+      if (onError) {
+        onError(error.message || 'Failed to remove item');
+      }
+    }
   };
 
   return (

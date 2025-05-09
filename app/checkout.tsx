@@ -6,7 +6,8 @@ import {
   TouchableOpacity, 
   ScrollView, 
   SafeAreaView,
-  Platform
+  Platform,
+  Alert
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, CreditCard, MapPin, Check, Radio as RadioIcon } from 'lucide-react-native';
@@ -14,6 +15,7 @@ import { useCart } from '@/contexts/CartContext';
 import Button from '@/components/Button';
 import { paymentMethods, addresses } from '@/data/products';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { PaymentService } from '@/services/PaymentService';
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart();
@@ -21,6 +23,7 @@ export default function Checkout() {
   const [selectedAddress, setSelectedAddress] = useState(addresses[0].id);
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState(1);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -34,12 +37,33 @@ export default function Checkout() {
     }
   }, [step]);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
+    setError(null);
+    
+    try {
+      // Process payment with our service
+      const result = await PaymentService.processPayment(
+        selectedPayment,
+        selectedAddress,
+        items,
+        total
+      );
+      
+      if (result.success) {
+        // Payment succeeded
+        setStep(3);
+      } else {
+        // Payment failed
+        setError(result.error || 'Payment failed. Please try again.');
+        Alert.alert('Payment Failed', result.error || 'Payment failed. Please try again.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unexpected error occurred');
+      Alert.alert('Error', err.message || 'An unexpected error occurred');
+    } finally {
       setIsProcessing(false);
-      setStep(3);
-    }, 2000);
+    }
   };
 
   const handleBack = () => {
@@ -180,6 +204,12 @@ export default function Checkout() {
           <Text style={styles.totalValue}>${(total * 1.08).toFixed(2)}</Text>
         </View>
       </View>
+      
+      {error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      ) : null}
       
       <Button
         title="Place Order"
@@ -494,5 +524,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: '#666666',
     fontStyle: 'italic',
+  },
+  errorContainer: {
+    backgroundColor: '#1A0000',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#FF0000',
+  },
+  errorText: {
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: '#FF0000',
+    textAlign: 'center',
   },
 });

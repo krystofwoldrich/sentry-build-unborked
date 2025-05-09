@@ -29,6 +29,30 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
   const addItem = (product: Product, quantity = 1) => {
+    // WORKING VERSION (uncomment to fix):
+    // setItems(currentItems => {
+    //   const existingItemIndex = currentItems.findIndex(item => item.product.id === product.id);
+    //   
+    //   if (existingItemIndex >= 0) {
+    //     // Item already exists in cart, update quantity
+    //     const updatedItems = [...currentItems];
+    //     updatedItems[existingItemIndex] = {
+    //       ...updatedItems[existingItemIndex],
+    //       quantity: updatedItems[existingItemIndex].quantity + quantity
+    //     };
+    //     return updatedItems;
+    //   } else {
+    //     // Item doesn't exist in cart, add new item
+    //     return [...currentItems, { product, quantity }];
+    //   }
+    // });
+    
+    // BROKEN: Check for a 'sku' property that doesn't exist in the Product type
+    // This will cause an error when adding products to the cart
+    if (!(product as any).sku) {
+      throw new Error('Cannot add product to cart: Missing SKU identifier');
+    }
+    
     setItems(currentItems => {
       const existingItemIndex = currentItems.findIndex(item => item.product.id === product.id);
       

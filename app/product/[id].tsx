@@ -7,7 +7,8 @@ import {
   TouchableOpacity, 
   ScrollView,
   SafeAreaView,
-  Platform
+  Platform,
+  Alert
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { products } from '@/data/products';
@@ -21,6 +22,7 @@ export default function ProductDetail() {
   const router = useRouter();
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
+  const [error, setError] = useState('');
   
   const product = products.find(p => p.id === id);
   
@@ -48,8 +50,20 @@ export default function ProductDetail() {
   };
   
   const handleAddToCart = () => {
-    addItem(product, quantity);
-    router.back();
+    try {
+      // WORKING VERSION (uncomment to fix):
+      // const productWithSku = { ...product, sku: `SKU-${product.id}` };
+      // addItem(productWithSku, quantity);
+      // router.back();
+      
+      // BROKEN: This will throw an error because the product doesn't have a 'sku' property
+      addItem(product, quantity);
+      router.back();
+    } catch (error: any) {
+      // Display the error message
+      setError(error.message || 'Failed to add item to cart');
+      Alert.alert('Error', error.message || 'Failed to add item to cart');
+    }
   };
 
   return (
@@ -87,6 +101,12 @@ export default function ProductDetail() {
           <Text style={styles.price}>${product.price.toFixed(2)}</Text>
           
           <Text style={styles.description}>{product.description}</Text>
+          
+          {error ? (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : null}
           
           <Text style={styles.compatibleTitle}>Compatible with:</Text>
           <View style={styles.compatibleContainer}>
@@ -299,5 +319,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Inter-SemiBold',
     color: '#FFFFFF',
+  },
+  errorContainer: {
+    backgroundColor: '#1A0000',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#FF0000',
+  },
+  errorText: {
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: '#FF0000',
   },
 });

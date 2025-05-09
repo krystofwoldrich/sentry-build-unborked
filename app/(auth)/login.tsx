@@ -39,7 +39,15 @@ export default function Login() {
         }
         await login(username, password);
       } else {
-        await loginWithSSO();
+        // WORKING VERSION (uncomment to fix):
+        // const demoUsername = 'demo';
+        // const demoPassword = 'demo123';
+        // await loginWithSSO(demoUsername, demoPassword);
+        
+        // BROKEN: Missing password parameter for SSO login
+        // This will cause the auth to fail because the password is required but not sent
+        const demoUsername = 'demo';
+        await loginWithSSO(demoUsername);
       }
       router.replace('/(tabs)');
     } catch (error) {

@@ -6,7 +6,8 @@ import {
   FlatList, 
   TouchableOpacity, 
   SafeAreaView, 
-  Platform
+  Platform,
+  Alert
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCart } from '@/contexts/CartContext';
@@ -18,14 +19,21 @@ import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 export default function Cart() {
   const { items, total, clearCart } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleCheckout = () => {
-    setIsCheckingOut(true);
-    setTimeout(() => {
-      router.push('/checkout');
+    try {
+      setIsCheckingOut(true);
+      setTimeout(() => {
+        router.push('/checkout');
+        setIsCheckingOut(false);
+      }, 1000);
+    } catch (error: any) {
+      setError(error.message || 'Checkout failed');
+      Alert.alert('Error', error.message || 'Checkout failed');
       setIsCheckingOut(false);
-    }, 1000);
+    }
   };
 
   const navigateToShop = () => {
@@ -75,9 +83,29 @@ export default function Cart() {
         </TouchableOpacity>
       </Animated.View>
       
+      {error ? (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity 
+            style={styles.dismissButton}
+            onPress={() => setError(null)}
+          >
+            <Text style={styles.dismissText}>Dismiss</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
+      
       <FlatList
         data={items}
-        renderItem={({ item }) => <CartItem item={item} />}
+        renderItem={({ item }) => (
+          <CartItem 
+            item={item} 
+            onError={(message: string) => {
+              setError(message);
+              Alert.alert('Error', message);
+            }}
+          />
+        )}
         keyExtractor={(item) => item.product.id}
         contentContainerStyle={styles.cartList}
         showsVerticalScrollIndicator={false}
@@ -224,5 +252,34 @@ const styles = StyleSheet.create({
   },
   shopButton: {
     width: '80%',
+  },
+  errorContainer: {
+    backgroundColor: '#1A0000',
+    padding: 16,
+    borderRadius: 8,
+    margin: 16,
+    marginTop: 0,
+    borderWidth: 1,
+    borderColor: '#FF0000',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+    color: '#FF0000',
+    flex: 1,
+    marginRight: 10,
+  },
+  dismissButton: {
+    padding: 8,
+    borderRadius: 4,
+    backgroundColor: '#111111',
+  },
+  dismissText: {
+    fontSize: 12,
+    fontFamily: 'Inter-SemiBold',
+    color: '#FFFFFF',
   },
 });

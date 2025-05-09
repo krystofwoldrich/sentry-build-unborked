@@ -5,7 +5,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (username: string, password: string) => Promise<void>;
-  loginWithSSO: () => Promise<void>;
+  loginWithSSO: (username: string, password?: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -70,16 +70,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const loginWithSSO = async () => {
+  const loginWithSSO = async (username: string, password?: string) => {
     setIsLoading(true);
     try {
       // Simulate SSO login
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // WORKING VERSION (uncomment to fix):
+      // // Set user without checking password
+      // setUser({
+      //   id: '1',
+      //   name: username || 'Demo User',
+      //   email: `${username.toLowerCase() || 'demo'}@example.com`,
+      //   avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+      // });
+      
+      // BROKEN: This will throw an error if password is missing
+      if (!password) {
+        throw new Error('SSO authentication failed: Missing credentials');
+      }
+      
       setUser({
         id: '1',
-        name: 'Demo User',
-        email: 'demo@example.com',
+        name: username || 'Demo User',
+        email: `${username.toLowerCase() || 'demo'}@example.com`,
         avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
       });
     } catch (error) {
