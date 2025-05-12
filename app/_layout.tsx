@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Stack, usePathname, useSegments } from 'expo-router';
+import { Stack, useNavigationContainerRef, usePathname, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
@@ -8,6 +8,10 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { SplashScreen } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
+
+const navigationIntegration = Sentry.reactNavigationIntegration({
+  enableTimeToInitialDisplay: true,
+});
 
 Sentry.init({
   dsn: 'https://e61034fa9afbf74cb3e809b62a3582a7@o447951.ingest.us.sentry.io/4509311309381632',
@@ -19,16 +23,32 @@ Sentry.init({
   // Configure Session Replay
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+  integrations: [
+    Sentry.mobileReplayIntegration(),
+    Sentry.feedbackIntegration(),
+    navigationIntegration,
+  ],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
+
+  tracesSampleRate: 1.0,
+  enableNativeFramesTracking: true,
+  enableAppStartTracking: true,
+  enableStallTracking: true,
 });
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 export default Sentry.wrap(function RootLayout() {
+  const ref = useNavigationContainerRef();
+  useEffect(() => {
+    if (ref) {
+      navigationIntegration.registerNavigationContainer(ref);
+    }
+  }, [ref]);
+
   useFrameworkReady();
 
   const [fontsLoaded, fontError] = useFonts({
