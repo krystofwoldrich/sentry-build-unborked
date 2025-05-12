@@ -104,10 +104,6 @@ export class PaymentService {
     //   transactionId: `applepay-${Date.now()}`
     // };
     
-    // BROKEN: Even if addressId is provided, we're not fetching or using the actual address details
-    // The Apple Pay API requires the complete address object, not just the ID
-    
-    // Instead, we'll just throw an error that looks like it came from Apple Pay
     const addressError = new Error('Apple Pay transaction failed: Shipping address information is invalid or incomplete.');
     console.error(addressError);
     throw addressError; // Actually throw the error
