@@ -61,12 +61,14 @@ export default function Checkout() {
         // Throw the error for better debugging and crash reports
         throw new Error(`Payment failed: ${result.error || 'Unknown payment error'}`);
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred');
-      Alert.alert('Error', err.message || 'An unexpected error occurred');
+    } catch (cause: any) {
+      setError(cause.message || 'An unexpected error occurred');
+      Alert.alert('Error', cause.message || 'An unexpected error occurred');
       
       // Rethrow with additional context
-      throw new Error(`Checkout error: ${err.message || 'Unknown error'}`);
+      const error = new Error(`Checkout error: ${cause.message || 'Unknown error'}`);
+      error.cause = cause;
+      throw error;
     } finally {
       setIsProcessing(false);
     }
