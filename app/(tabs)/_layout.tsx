@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor: Platform.OS === 'ios' ? 'rgba(0, 0, 0, 0.85)' : '#000000',
     borderTopWidth: 0,
     elevation: 8,
-    height: 60,
+    // height: 60,
     paddingBottom: Platform.OS === 'ios' ? 20 : 8,
     shadowColor: '#FF0000',
     shadowOffset: { width: 0, height: -2 },
