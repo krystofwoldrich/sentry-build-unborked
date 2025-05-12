@@ -57,10 +57,16 @@ export default function Checkout() {
         // Payment failed
         setError(result.error || 'Payment failed. Please try again.');
         Alert.alert('Payment Failed', result.error || 'Payment failed. Please try again.');
+        
+        // Throw the error for better debugging and crash reports
+        throw new Error(`Payment failed: ${result.error || 'Unknown payment error'}`);
       }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred');
       Alert.alert('Error', err.message || 'An unexpected error occurred');
+      
+      // Rethrow with additional context
+      throw new Error(`Checkout error: ${err.message || 'Unknown error'}`);
     } finally {
       setIsProcessing(false);
     }

@@ -85,32 +85,18 @@ export class PaymentService {
     // the address information, but here we're creating an error condition
     
     if (addressId === null) {
-      return {
-        success: false,
-        error: 'Shipping address is required for Apple Pay'
-      };
+      const error = new Error('Shipping address is required for Apple Pay');
+      console.error(error);
+      throw error; // Actually throw the error
     }
     
     // WORKING VERSION (uncomment to fix):
-    // const address = this.getAddressById(addressId);
-    // if (!address) {
+    // if (addressId === null) {
     //   return {
     //     success: false,
-    //     error: 'Invalid shipping address'
+    //     error: 'Shipping address is required for Apple Pay'
     //   };
     // }
-    //
-    // // Process Apple Pay with the shipping address
-    // const applePayPayload = {
-    //   amount: total,
-    //   shippingAddress: {
-    //     streetAddress: [address.line1, address.line2].filter(Boolean).join(' '),
-    //     city: address.city,
-    //     state: address.state,
-    //     postalCode: address.postalCode,
-    //     country: address.country
-    //   }
-    // };
     //
     // // Success!
     // return {
@@ -118,14 +104,9 @@ export class PaymentService {
     //   transactionId: `applepay-${Date.now()}`
     // };
     
-    // BROKEN: Even if addressId is provided, we're not fetching or using the actual address details
-    // The Apple Pay API requires the complete address object, not just the ID
-    
-    // Instead, we'll just throw an error that looks like it came from Apple Pay
-    return {
-      success: false,
-      error: 'Apple Pay transaction failed: Shipping address information is invalid or incomplete.'
-    };
+    const addressError = new Error('Apple Pay transaction failed: Shipping address information is invalid or incomplete.');
+    console.error(addressError);
+    throw addressError; // Actually throw the error
   }
   
   /**

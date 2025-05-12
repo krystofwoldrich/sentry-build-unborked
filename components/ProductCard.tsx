@@ -5,6 +5,7 @@ import { Star, Plus } from 'lucide-react-native';
 import { Product } from '../types/product';
 import { useCart } from '../contexts/CartContext';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { prepareProductForCart, handleAddToCart } from '../utils/cartUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -22,8 +23,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
     router.push(`/product/${product.id}`);
   };
   
-  const handleAddToCart = () => {
-    addItem(product, 1);
+  const onAddToCart = () => {
+    handleAddToCart(
+      addItem,
+      product,
+      1,
+      undefined, // No success callback needed
+      (errorMessage) => {
+        // We could display an error message here if needed
+        console.error(`Failed to add to cart: ${errorMessage}`);
+      }
+    );
   };
 
   return (
@@ -50,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
           <View style={styles.priceRow}>
             <Text style={styles.price}>${product.price.toFixed(2)}</Text>
             <TouchableOpacity 
-              onPress={handleAddToCart} 
+              onPress={onAddToCart} 
               style={styles.addButton}
               activeOpacity={0.7}
             >

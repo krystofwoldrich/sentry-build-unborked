@@ -8,6 +8,7 @@ export interface Product {
   rating: number;
   reviews: number;
   compatibleWith: string[];
+  sku: string;
 }
 
 export interface CartItem {
@@ -24,6 +25,7 @@ export interface User {
 
 export interface PaymentMethod {
   id: string;
+  name: string;
   type: 'card' | 'paypal' | 'applepay';
   last4?: string;
   expiryDate?: string;

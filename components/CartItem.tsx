@@ -21,6 +21,8 @@ const CartItem: React.FC<CartItemProps> = ({ item, onError }) => {
       if (onError) {
         onError(error.message || 'Failed to update quantity');
       }
+      // Rethrow the error for better debugging visibility
+      throw new Error(`Failed to increase quantity: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -35,6 +37,8 @@ const CartItem: React.FC<CartItemProps> = ({ item, onError }) => {
       if (onError) {
         onError(error.message || 'Failed to update quantity');
       }
+      // Rethrow the error for better debugging visibility
+      throw new Error(`Failed to decrease quantity: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -45,6 +49,8 @@ const CartItem: React.FC<CartItemProps> = ({ item, onError }) => {
       if (onError) {
         onError(error.message || 'Failed to remove item');
       }
+      // Rethrow the error for better debugging visibility
+      throw new Error(`Failed to remove item: ${error.message || 'Unknown error'}`);
     }
   };
 

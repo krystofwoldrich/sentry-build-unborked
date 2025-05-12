@@ -16,6 +16,7 @@ import { ChevronLeft, Star, ShoppingCart, Minus, Plus } from 'lucide-react-nativ
 import Button from '@/components/Button';
 import { useCart } from '@/contexts/CartContext';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { handleAddToCart } from '@/utils/cartUtils';
 
 export default function ProductDetail() {
   const { id } = useLocalSearchParams();
@@ -49,21 +50,18 @@ export default function ProductDetail() {
     }
   };
   
-  const handleAddToCart = () => {
-    try {
-      // WORKING VERSION (uncomment to fix):
-      // const productWithSku = { ...product, sku: `SKU-${product.id}` };
-      // addItem(productWithSku, quantity);
-      // router.back();
-      
-      // BROKEN: This will throw an error because the product doesn't have a 'sku' property
-      addItem(product, quantity);
-      router.back();
-    } catch (error: any) {
-      // Display the error message
-      setError(error.message || 'Failed to add item to cart');
-      Alert.alert('Error', error.message || 'Failed to add item to cart');
-    }
+  const onAddToCart = () => {
+    handleAddToCart(
+      addItem,
+      product,
+      quantity,
+      () => router.back(), // On success, navigate back
+      (errorMessage) => {
+        // Display the error message
+        setError(errorMessage);
+        Alert.alert('Error', errorMessage);
+      }
+    );
   };
 
   return (
@@ -141,7 +139,7 @@ export default function ProductDetail() {
           
           <Button
             title="Add to Cart"
-            onPress={handleAddToCart}
+            onPress={onAddToCart}
             style={styles.addButton}
             icon={<ShoppingCart size={20} color="#FFFFFF" style={{ marginRight: 8 }} />}
             iconPosition="left"
