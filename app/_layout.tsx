@@ -7,11 +7,28 @@ import { View, StyleSheet } from 'react-native';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { CartProvider } from '@/contexts/CartContext';
 import { SplashScreen } from 'expo-router';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://e61034fa9afbf74cb3e809b62a3582a7@o447951.ingest.us.sentry.io/4509311309381632',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   useFrameworkReady();
 
   const [fontsLoaded, fontError] = useFonts({
@@ -42,7 +59,7 @@ export default function RootLayout() {
       </CartProvider>
     </AuthProvider>
   );
-};
+});;
 
 const styles = StyleSheet.create({
   container: {
