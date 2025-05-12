@@ -25,6 +25,7 @@ export interface User {
 
 export interface PaymentMethod {
   id: string;
+  name: string;
   type: 'card' | 'paypal' | 'applepay';
   last4?: string;
   expiryDate?: string;
