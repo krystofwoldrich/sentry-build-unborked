@@ -47,13 +47,16 @@ export default function Login() {
         // BROKEN: Missing password parameter for SSO login
         // This will cause the auth to fail because the password is required but not sent
         const demoUsername = 'demo';
-        await loginWithSSO(demoUsername);
+        await loginWithSSO(demoUsername, password);
       }
       router.replace('/(tabs)');
-    } catch (error: any) {
+    } catch (cause: any) {
       setLoginError('Login failed. Please try again.');
-      console.error('Login error:', error);
-      throw new Error(`Login failed: ${error.message || 'Unknown error'}`);
+      console.error('Login error:', cause);
+
+      const error = new Error(`Login failed: ${cause.message || 'Unknown error'}`);
+      error.cause = cause;
+      throw error;
     }
   };
 
