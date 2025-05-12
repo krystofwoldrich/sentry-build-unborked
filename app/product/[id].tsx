@@ -16,7 +16,7 @@ import { ChevronLeft, Star, ShoppingCart, Minus, Plus } from 'lucide-react-nativ
 import Button from '@/components/Button';
 import { useCart } from '@/contexts/CartContext';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { prepareProductForCart, handleAddToCart } from '@/utils/cartUtils';
+import { handleAddToCart } from '@/utils/cartUtils';
 
 export default function ProductDetail() {
   const { id } = useLocalSearchParams();
