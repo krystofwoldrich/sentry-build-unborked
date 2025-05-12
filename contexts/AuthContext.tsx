@@ -42,6 +42,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('Error checking auth state:', error);
         setUser(null);
         setIsLoading(false);
+        throw error;
       }
     };
 

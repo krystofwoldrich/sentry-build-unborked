@@ -50,9 +50,10 @@ export default function Login() {
         await loginWithSSO(demoUsername);
       }
       router.replace('/(tabs)');
-    } catch (error) {
+    } catch (error: any) {
       setLoginError('Login failed. Please try again.');
       console.error('Login error:', error);
+      throw new Error(`Login failed: ${error.message || 'Unknown error'}`);
     }
   };
 

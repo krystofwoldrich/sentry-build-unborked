@@ -8,6 +8,7 @@ export interface Product {
   rating: number;
   reviews: number;
   compatibleWith: string[];
+  sku: string;
 }
 
 export interface CartItem {
